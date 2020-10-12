@@ -8,7 +8,7 @@
 #ifndef THIRD_PARTY_DEVICES_STM32_HAL_SENSORBUTTON_H_
 #define THIRD_PARTY_DEVICES_STM32_HAL_SENSORBUTTON_H_
 
-#include "stm32f0xx_hal.h"
+#include "stm32common_hal.h"
 
 namespace stm32hal {
 
