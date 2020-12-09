@@ -19,7 +19,7 @@ public:
 
 private:
   struct Channel {
-	uint32_t in1, in2, pwm;
+	uint32_t in1, in2;
 	TIM_HandleTypeDef *pwmp;
     uint32_t channel;
     enum {
@@ -39,7 +39,6 @@ public:
   void init (GPIO_TypeDef  *port,
 		  	  uint32_t ain2, uint32_t ain1,
 			  uint32_t bin2, uint32_t bin1,
-			  uint32_t apwm, uint32_t bpwm,
 			  uint32_t stby,
 			  TIM_HandleTypeDef *apwmp, uint32_t achannel,
 			  TIM_HandleTypeDef *bpwmp, uint32_t bchannel);
