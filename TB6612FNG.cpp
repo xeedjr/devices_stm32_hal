@@ -1,17 +1,12 @@
 ﻿#include "TB6612FNG.h"
 
 
-void TB6612FNG::init(GPIO_TypeDef  *port,
-					  uint32_t ain2, uint32_t ain1,
-					  uint32_t bin2, uint32_t bin1,
-					  uint32_t stby,
+void TB6612FNG::init(Line ain2, Line ain1,
+                      Line bin2, Line bin1,
+                      Line stby,
 					  TIM_HandleTypeDef *apwmp, uint32_t achannel,
 					  TIM_HandleTypeDef *bpwmp, uint32_t bchannel)
 {
-	GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-	this->port = port;
-
 	chn[kA].in2 = ain2;
 	chn[kA].in1 = ain1;
 	chn[kA].pwmp = apwmp;
@@ -24,11 +19,11 @@ void TB6612FNG::init(GPIO_TypeDef  *port,
 
 	this->stby = stby;
 
-	HAL_GPIO_WritePin(port, stby, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(port, ain2, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(port, ain1, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(port, bin2, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(port, bin1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(stby.port, stby.pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(ain2.port, ain2.pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(ain1.port, ain1.pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(bin2.port, bin2.pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(bin1.port, bin1.pin, GPIO_PIN_RESET);
 
 	HAL_TIM_PWM_Start(apwmp, achannel);
 	HAL_TIM_PWM_Start(bpwmp, bchannel);
@@ -54,23 +49,23 @@ void TB6612FNG::drive(Channels ch, Mode mode, float pwm)
 {
 	assert_param((pwm > 100.0) || (pwm < 0.0));
     
-  HAL_GPIO_WritePin(port, stby, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(stby.port, stby.pin, GPIO_PIN_SET);
   
   switch (mode) {
     case kCW:
-      HAL_GPIO_WritePin(port, chn[ch].in1, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(port, chn[ch].in2, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(chn[ch].in1.port, chn[ch].in1.pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(chn[ch].in2.port, chn[ch].in2.pin, GPIO_PIN_RESET);
       _set_drive_speed(ch, pwm);
     break;
     case kCCW:
-      HAL_GPIO_WritePin(port, chn[ch].in1, GPIO_PIN_RESET);
-      HAL_GPIO_WritePin(port, chn[ch].in2, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(chn[ch].in1.port, chn[ch].in1.pin, GPIO_PIN_RESET);
+      HAL_GPIO_WritePin(chn[ch].in2.port, chn[ch].in2.pin, GPIO_PIN_SET);
       _set_drive_speed(ch, pwm);
     break;
     case kShortBrake:
       HAL_TIM_PWM_Stop(chn[ch].pwmp, chn[ch].channel);
-      HAL_GPIO_WritePin(port, chn[ch].in1, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(port, chn[ch].in2, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(chn[ch].in1.port, chn[ch].in1.pin, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(chn[ch].in2.port, chn[ch].in2.pin, GPIO_PIN_SET);
     break;
     default:
     	assert_param(false);
