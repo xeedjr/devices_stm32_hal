@@ -32,18 +32,24 @@ USSensor::USSensor(TIM_HandleTypeDef *timer) {
 USSensor::~USSensor() {
     // TODO Auto-generated destructor stub
 }
-uint32_t var = 0;
+
 void USSensor::IT(TIM_HandleTypeDef *htim) {
 
     if (__HAL_TIM_GET_IT_SOURCE(htim, TIM_IT_CC1) != RESET) {
         /// Channel 1
         auto curr = __HAL_TIM_GET_COMPARE(htim, TIM_CHANNEL_1);
 
-        if ((curr - prev1) > 0) {
-               dist1 = curr - prev1;
-               var = dist1;
+        if ((curr - sonars[0].prev) > 0) {
+            sonars[0].dist = curr - sonars[0].prev;
         }
 
-        prev1 = curr;
+        sonars[0].prev = curr;
     }
+}
+
+float USSensor::get_distance(uint8_t idx) {
+    double usec = ((1.0/freq)*sonars[idx].dist)*1000*1000;
+    double dist = usec/58.0;
+
+    return dist;
 }
