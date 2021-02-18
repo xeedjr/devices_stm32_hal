@@ -14,6 +14,9 @@ class WheelMotorEncoder : public HallEncoder {
 public:
     WheelMotorEncoder(TIM_HandleTypeDef *timer, uint8_t gear_reduction);
     virtual ~WheelMotorEncoder();
+    /**
+     * return position in radians
+     */
     double get_wheel_position();
 };
 
