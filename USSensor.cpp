@@ -25,7 +25,7 @@ USSensor::USSensor(TIM_HandleTypeDef *timer) {
 
     if (HAL_TIM_IC_Start_IT(timer, TIM_CHANNEL_1) != HAL_OK)
         exit(-2);
-    if (HAL_TIM_IC_Start_IT(timer, TIM_CHANNEL_2) != HAL_OK)
+    if (HAL_TIM_IC_Start_IT(timer, TIM_CHANNEL_3) != HAL_OK)
         exit(-2);
 }
 
@@ -44,6 +44,16 @@ void USSensor::IT(TIM_HandleTypeDef *htim) {
         }
 
         sonars[0].prev = curr;
+    }
+    if (__HAL_TIM_GET_IT_SOURCE(htim, TIM_IT_CC3) != RESET) {
+        /// Channel 2
+        auto curr = __HAL_TIM_GET_COMPARE(htim, TIM_CHANNEL_3);
+
+        if ((curr - sonars[1].prev) > 0) {
+            sonars[1].dist = curr - sonars[1].prev;
+        }
+
+        sonars[1].prev = curr;
     }
 }
 
