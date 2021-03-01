@@ -16,10 +16,11 @@
 class USSensor {
     TIM_HandleTypeDef *timer;
 
-    uint64_t freq = 240*1000*1000;
+    uint64_t freq = 120*1000*1000;
     struct {
         uint32_t prev = 0;
-        uint32_t dist = 0;
+       // uint32_t dist = 0;
+        float usec = 0;
     } sonars[3];
 
     void IT(TIM_HandleTypeDef *htim);

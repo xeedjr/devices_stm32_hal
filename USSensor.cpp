@@ -35,22 +35,28 @@ USSensor::~USSensor() {
 
 void USSensor::IT(TIM_HandleTypeDef *htim) {
 
-    if (__HAL_TIM_GET_IT_SOURCE(htim, TIM_IT_CC1) != RESET) {
+    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
         /// Channel 1
         auto curr = __HAL_TIM_GET_COMPARE(htim, TIM_CHANNEL_1);
 
-        if ((curr - sonars[0].prev) > 0) {
-            sonars[0].dist = curr - sonars[0].prev;
+        if (curr > sonars[0].prev) {
+            auto dist = curr - sonars[0].prev;
+            auto usec = ((1.0/freq)*dist)*1000*1000;
+            if (usec > (2.0*58.0) && usec < (500.0*58.0))
+                sonars[0].usec = usec;
         }
 
         sonars[0].prev = curr;
     }
-    if (__HAL_TIM_GET_IT_SOURCE(htim, TIM_IT_CC3) != RESET) {
+    if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) {
         /// Channel 2
         auto curr = __HAL_TIM_GET_COMPARE(htim, TIM_CHANNEL_3);
 
-        if ((curr - sonars[1].prev) > 0) {
-            sonars[1].dist = curr - sonars[1].prev;
+        if (curr > sonars[1].prev) {
+            auto dist = curr - sonars[1].prev;
+            auto usec = ((1.0/freq)*dist)*1000*1000;
+            if (usec > (2.0*58.0) && usec < (500.0*58.0))
+                sonars[1].usec = usec;
         }
 
         sonars[1].prev = curr;
@@ -58,8 +64,7 @@ void USSensor::IT(TIM_HandleTypeDef *htim) {
 }
 
 float USSensor::get_distance(uint8_t idx) {
-    double usec = ((1.0/freq)*sonars[idx].dist)*1000*1000;
-    double dist = usec/58.0;
+    double dist = sonars[idx].usec/58.0;
 
     return dist;
 }
